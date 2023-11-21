@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "ts-build": "tsc",
-    "start": "functions-framework --target=TypescriptFunction",
+    "dev": "NODE_ENV='dev' npx functions-framework --target=refreshTokens",
     "prestart": "npm run build",
     "gcp-build": "npm run build"
   },

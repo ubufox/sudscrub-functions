@@ -11,8 +11,8 @@ export const getNewAccessToken = async (refresh_token: string): Promise<AccessTo
         return mAccessToken;
     }
 
-    const client_id: string = 'abdcadfaoj';
-    const client_secret: string = '13r67f8siodfhaiufb';
+    const client_id: string  = process.env.TIKTOK_CLIENT_ID;
+    const client_secret: string = process.env.TIKTOK_CLIENT_SECRET;
     const grant_type: string = 'refresh_token';
 
     const res = await fetch(
