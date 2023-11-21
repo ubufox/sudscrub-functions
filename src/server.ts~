@@ -1,0 +1,39 @@
+import * as ff from '@google-cloud/functions-framework';
+import {Firestore} from '@google-cloud/firestore';
+
+import { getFirestore } from './datastore/main';
+import { getRefreshToken } from './datastore/getRefreshToken';
+import { RefreshToken } from './datastore/types/main';
+
+
+interface PubSubData {
+    subscription: string;
+    message: {
+        messageId: string;
+	publishTime: string;
+	data: string;
+        attributes?: {[key: string]: string};
+    };
+}
+
+
+ff.http('refreshTokens', async (req: ff.Request, res:ff.Response) => {
+    // get firestore
+    const firestore: Firestore = getFirestore();
+
+    // get current refresh token
+    const rt: RefreshToken = await getRefreshToken(firestore);
+
+    console.log("Refresh token ->");
+    console.log(rt);
+
+    // get new access token
+    // update access token in memcache
+    // update refresh token in datastore
+    res.send('OK');
+});
+
+ff.cloudEvent<PubSubData>('CloudEventFunction', ce => {
+    console.log(ce.data?.message.messageId);
+});
+
