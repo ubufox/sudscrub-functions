@@ -2,6 +2,10 @@ dist/
 
 *.un~
 
+# Env Variables
+*.env
+*.env~
+
 # Logs
 logs
 *.log

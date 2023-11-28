@@ -1,5 +1,3 @@
-import fetch from 'node-fetch';
-
 import { REFRESH_TOKEN_URL } from './endpoints';
 import { AccessToken } from './types/main';
 import { MockData } from './mock_data/main';
@@ -15,9 +13,16 @@ export const getNewAccessToken = async (refresh_token: string): Promise<AccessTo
     const client_secret: string = process.env.TIKTOK_CLIENT_SECRET;
     const grant_type: string = 'refresh_token';
 
-    const res = await fetch(
-        `${REFRESH_TOKEN_URL}?client_id=${client_id}&client_secret=${client_secret}&grant_type=${grant_type}&refresh_token=${refresh_token}`,
+    const body = {
+        client_id,
+        client_secret,
+        grant_type,
+        refresh_token,
+    };
+
+    const res = await fetch(REFRESH_TOKEN_URL,
         {
+            body: JSON.stringify(body),
             method: 'post',
             headers: {
                 'Content-Type': 'application/json',
@@ -31,12 +36,13 @@ export const getNewAccessToken = async (refresh_token: string): Promise<AccessTo
     }
 
     // We expect the response from the TikTok API to match our AccessToken Interface
+    // based on the TikTok API documentation
     const newAccessToken: any = await res.json();
 
     return {
-        access_token: newAccessToken?.access_token,
-        expires_in: newAccessToken?.expires_in,
-        refresh_token: newAccessToken?.refresh_token,
-        refresh_token_expires_in: newAccessToken?.refresh_token_expires_in,
+        access_token: newAccessToken?.data?.access_token,
+        expires_in: newAccessToken?.data?.expires_in,
+        refresh_token: newAccessToken?.data?.refresh_token,
+        refresh_token_expires_in: newAccessToken?.data?.refresh_token_expires_in,
     }
 };

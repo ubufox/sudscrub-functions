@@ -22,7 +22,7 @@ export class RefreshTokenC {
 }
 
 const getLatestFromCollection = (c: FirebaseFirestore.QuerySnapshot): RefreshToken => {
-    const data = c.docs.pop()?.data();
+    const data = c.docs[0].data();
 
     if (typeof(data) !== 'undefined') {
         return new RefreshTokenC(data.token, data.create_time, data.expire_time);
@@ -40,7 +40,7 @@ export const getRefreshToken = async (f: Firestore): Promise<RefreshToken> => {
 
     // Get the newest refresh token
     const refreshTokens = await collectionReference
-        .orderBy('create_time')
+        .orderBy('create_time', "desc")
         .limit(1)
         .get();
     

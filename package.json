@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "ts-build": "tsc",
     "dev": "NODE_ENV='dev' npx functions-framework --target=refreshTokens",
+    "prod": "npx functions-framework --target=refreshTokens",
     "prestart": "npm run build",
     "gcp-build": "npm run build"
   },
@@ -22,6 +23,7 @@
     "express": "^4.18.2",
     "node-fetch": "^3.3.2",
     "nodemon": "^3.0.1",
+    "redis": "^4.6.11",
     "ts-node": "^10.9.1"
   },
   "devDependencies": {
