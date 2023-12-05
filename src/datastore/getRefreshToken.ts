@@ -1,9 +1,6 @@
 import {Firestore, QueryDocumentSnapshot} from '@google-cloud/firestore';
 
 import { RefreshToken, AccessToken } from './types/main';
-import { MockData } from './mock_data/main';
-
-let mockData: MockData = new MockData();
 
 export class RefreshTokenC {
     token: string;
@@ -32,10 +29,6 @@ const getLatestFromCollection = (c: FirebaseFirestore.QuerySnapshot): RefreshTok
 }
 
 export const getRefreshToken = async (f: Firestore): Promise<RefreshToken> => {
-    if (process.env.NODE_ENV === 'dev') {
-        return mockData.rt;
-    }
-
     const collectionReference = f.collection('refresh-token');
 
     // Get the newest refresh token

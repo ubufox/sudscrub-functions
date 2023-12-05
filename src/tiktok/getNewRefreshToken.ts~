@@ -1,7 +1,14 @@
 import { REFRESH_TOKEN_URL } from './endpoints';
-import { AccessToken } from './types/main';
+import { RefreshToken } from '../datastore/types/main';
+import { MockData } from '../datastore/mock_data/main';
 
-export const getNewAccessToken = async (refresh_token: string): Promise<AccessToken> => {
+const mRefreshToken: RefreshToken = new MockData().rt;
+
+export const getNewRefreshToken = async (refresh_token: string): Promise<RefreshToken> => {
+    if (process.env.NODE_ENV === 'dev') {
+        return mRefreshToken;
+    }
+
     const client_id: string  = process.env.TIKTOK_CLIENT_ID;
     const client_secret: string = process.env.TIKTOK_CLIENT_SECRET;
     const grant_type: string = 'refresh_token';
@@ -30,19 +37,14 @@ export const getNewAccessToken = async (refresh_token: string): Promise<AccessTo
 
     // We expect the response from the TikTok API to match our AccessToken Interface
     // based on the TikTok API documentation
-    const newAccessToken: any = await res.json();
+    const newRefreshToken: any = await res.json();
 
-    if (typeof newAccessToken?.data?.access_token === 'undefined') {
-        throw new Error('Failed request to TikTok API');
-    }
-
-    console.log("new token ->");
-    console.log(newAccessToken);
+    console.log('new refresh token');
+    console.log(newRefreshToken);
 
     return {
-        access_token: newAccessToken?.data?.access_token,
-        expires_in: newAccessToken?.data?.expires_in,
-        refresh_token: newAccessToken?.data?.refresh_token,
-        refresh_token_expires_in: newAccessToken?.data?.refresh_token_expires_in,
+        token: newRefreshToken?.data?.refresh_token,
+        expire_time: Date.now() + newRefreshToken?.data?.expires_in,
+        create_time: Date.now(),
     }
 };

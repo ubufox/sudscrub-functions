@@ -3,5 +3,7 @@ import { RedisClientType } from 'redis';
 import { REDIS_KEY } from './consts';
 
 export const updateAccessToken = async (redisClient: RedisClientType, at: string) => {
+    console.log(`update redis with -> ${at}`);
+
     return await redisClient.set(REDIS_KEY, at);
 };

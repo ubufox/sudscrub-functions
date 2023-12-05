@@ -1,10 +1,12 @@
 dist/
+deploy.sh
 
 *.un~
 
 # Env Variables
 *.env
 *.env~
+.env.yaml
 
 # Logs
 logs

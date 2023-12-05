@@ -1,9 +1,12 @@
-<<<<<<< HEAD
-node_modules/
 dist/
 
 *.un~
-=======
+
+# Env Variables
+*.env
+*.env~
+.env.yaml
+
 # Logs
 logs
 *.log
@@ -89,12 +92,6 @@ web_modules/
 .cache
 .parcel-cache
 
-# Next.js build output
-.next
-out
-
-# Nuxt.js build / generate output
-.nuxt
 dist
 
 # Gatsby files
@@ -134,4 +131,3 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
->>>>>>> f433855a350bd7d29d8ffd4191f5c0557d1b74a2

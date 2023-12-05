@@ -6,6 +6,7 @@ declare global {
             REDIS_HOST: string,
             REDIS_PORT: string,
             NODE_ENV: 'dev' | 'prod';
+            BUSINESS_ID: string,
         }
     }
 }

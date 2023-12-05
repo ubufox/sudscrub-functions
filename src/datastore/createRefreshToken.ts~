@@ -5,8 +5,14 @@ import { RefreshToken } from './types/main';
 export const createRefreshToken = async (f:Firestore, rt: string, expires: number) => {
     const collectionReference = f.collection('refresh-token');
 
+    console.log('expires value');
+    console.log(expires);
+
     const create_time: Date = new Date(Date.now());
     const expire_time: Date = new Date(Date.now() + expires);
+
+    console.log('expire date');
+    console.log(expire_time);
 
     return await collectionReference.add({
             token: rt,
