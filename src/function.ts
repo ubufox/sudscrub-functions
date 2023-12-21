@@ -29,17 +29,6 @@ if (process.env.NODE_ENV === 'dev') {
     dotenv.config();
 }
 
-interface PubSubData {
-    subscription: string;
-    message: {
-        messageId: string;
-        publishTime: string;
-        data: string;
-        attributes?: {[key: string]: string};
-    }
-}
-
-
 ff.http('refreshTokens', async (req: ff.Request, res:ff.Response) => {
     // get firestore
     const firestore: Firestore = getFirestore();
@@ -93,9 +82,8 @@ ff.cloudEvent<CloudEventV1<protobuf.Message<DocumentEventData>>>('getTikTokComme
         console.error("Request should include a video and comment identifier"); 
         return;
     }
-
     if (content?.comment_type.stringValue === 'delete') {
-        console.log(`Ignoring deleted comment ${data?.comment_id}`);
+        console.log(`Ignoring deleted comment ${data?.comment_id.stringValue}`);
         return;
     }
 
@@ -127,4 +115,27 @@ ff.cloudEvent<CloudEventV1<protobuf.Message<DocumentEventData>>>('getTikTokComme
     await upsertComment(firestore, comment);
 
     console.log('Video and comment upsert complete!');
+});
+
+ff.http('getHomeData', async (req: ff.Request, res: ff.Response) => {
+    // get all videos
+    // for each video
+    //   get all comments for the video_id
+    //       - a comment is "awaiting reply" if it is not
+    //           - skipped
+    //           - already has a response from sudscrub
+    //           - has an ai-response submitted by a sudscrub manager
+    res.send('OK');
+});
+
+ff.http('getResponses', async (req: ff.Request, res: ff.Response) => {
+
+});
+
+ff.http('getHistory', async (req: ff.Request, res: ff.Response) => {
+
+});
+
+ff.http('skipComment', async (req: ff.Request, res: ff.Response) => {
+    // provide an interface for users to be able to skip comments that 
 });
