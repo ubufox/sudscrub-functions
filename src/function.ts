@@ -9,13 +9,14 @@ import { createClient, RedisClientType } from 'redis';
 // DATASTORE
 import { getFirestore } from './datastore/main';
 import { getRefreshToken } from './datastore/getRefreshToken';
+import { getAllVideos } from './datastore/getVideos';
 import { createRefreshToken } from './datastore/createRefreshToken';
 import { RefreshToken } from './datastore/types/main';
 import { upsertComment, upsertVideo } from './datastore/upsert';
 
 // TIK TOK
 import { getNewAccessToken } from './tiktok/getNewAccessToken';
-import { AccessToken, TikTokComment, TikTokEvent } from './tiktok/types/main';
+import { AccessToken, TikTokComment, TikTokEvent, TikTokVideo } from './tiktok/types/main';
 import { getVideoById } from './tiktok/getVideoById';
 import { getCommentById } from './tiktok/getCommentById';
 
@@ -24,6 +25,7 @@ import { updateAccessToken } from './redis/updateAccessToken';
 import { getAccessToken } from './redis/getAccessToken';
 import { CloudEventV1 } from 'cloudevents';
 import { StringDecoder } from 'string_decoder';
+import { getAwaitingReplyByVideoID, TikTokCommentWithTree } from './datastore/getAwaitingReply';
 
 if (process.env.NODE_ENV === 'dev') {
     dotenv.config();
@@ -118,14 +120,24 @@ ff.cloudEvent<CloudEventV1<protobuf.Message<DocumentEventData>>>('getTikTokComme
 });
 
 ff.http('getHomeData', async (req: ff.Request, res: ff.Response) => {
+    const firestore: Firestore = getFirestore();
+
     // get all videos
-    // for each video
-    //   get all comments for the video_id
-    //       - a comment is "awaiting reply" if it is not
-    //           - skipped
-    //           - already has a response from sudscrub
-    //           - has an ai-response submitted by a sudscrub manager
-    res.send('OK');
+    const videos: Array<TikTokVideo> = await getAllVideos(firestore);
+
+    const homeData: {[key: string]: { video: TikTokVideo, awaitingRep: Array<TikTokCommentWithTree> }} = videos.reduce(
+        (acc: {[key: string]: { video: TikTokVideo, awaitingRep: Array<TikTokCommentWithTree> }}, v: TikTokVideo) => {
+        acc[v.item_id] = { video: v, awaitingRep: [] };
+
+        return acc;
+    }, {});
+
+    for(const v of videos) {
+        const awaitingRep = await getAwaitingReplyByVideoID(firestore, v.item_id);
+        homeData[v.item_id].awaitingRep = awaitingRep;
+    }
+ 
+    res.json(homeData);
 });
 
 ff.http('getResponses', async (req: ff.Request, res: ff.Response) => {
